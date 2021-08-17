@@ -27,15 +27,24 @@ app.get("/api/hello", (req, res) => {
  * Here is the needed API service
  */
 app.get("/api/:date?", (req, res) => {
+  if (!req.params.date) {
+    return res.json({
+      unix: Date.now(),
+      utc: new Date().toGMTString(),
+    });
+  }
+
   let dateObj = new Date(
     isNaN(Number(req.params.date)) ? req.params.date : Number(req.params.date)
   );
 
   if (isNaN(dateObj.getTime())) {
-    dateObj = new Date(0);
+    return res.json({
+      error: "Invalid Date",
+    });
   }
 
-  res.status(200).send({
+  res.json({
     unix: dateObj.getTime(),
     utc: dateObj.toGMTString(),
   });
